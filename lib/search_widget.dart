@@ -30,6 +30,7 @@ class SearchWidget<T> extends StatefulWidget {
     this.onItemSelected,
     this.hideSearchBoxWhenItemSelected = false,
     this.listContainerHeight,
+    this.backgroundColor = Colors.white,
     this.noItemsFoundWidget,
     this.textFieldBuilder,
   }) : super(key: key);
@@ -42,6 +43,7 @@ class SearchWidget<T> extends StatefulWidget {
   final QueryBuilder<T> queryBuilder;
   final TextFieldBuilder textFieldBuilder;
   final Widget noItemsFoundWidget;
+  final Color backgroundColor;
 
   final OnItemSelected<T> onItemSelected;
 
@@ -123,13 +125,12 @@ class MySingleChoiceSearchState<T> extends State<SearchWidget<T>> {
         }
       }
     });
-    KeyboardVisibilityNotification().addNewListener(
-      onChange: (visible) {
-        if (!visible) {
-          _focusNode.unfocus();
-        }
-      },
-    );
+
+    KeyboardVisibilityController().onChange.listen((visible) {
+      if (!visible) {
+        _focusNode.unfocus();
+      }
+    });
   }
 
   @override
@@ -266,7 +267,7 @@ class MySingleChoiceSearchState<T> extends State<SearchWidget<T>> {
                   height: listContainerHeight,
                   margin: const EdgeInsets.symmetric(horizontal: 12),
                   child: Card(
-                    color: Colors.white,
+                    color: widget.backgroundColor,
                     elevation: 5,
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(4)),
