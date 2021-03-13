@@ -31,6 +31,7 @@ class SearchWidget<T> extends StatefulWidget {
     this.hideSearchBoxWhenItemSelected = false,
     this.listContainerHeight,
     this.backgroundColor = Colors.white,
+    this.cardBorderRadius = const BorderRadius.all(Radius.circular(4)),
     this.noItemsFoundWidget,
     this.textFieldBuilder,
   }) : super(key: key);
@@ -44,6 +45,7 @@ class SearchWidget<T> extends StatefulWidget {
   final TextFieldBuilder textFieldBuilder;
   final Widget noItemsFoundWidget;
   final Color backgroundColor;
+  final BorderRadius cardBorderRadius;
 
   final OnItemSelected<T> onItemSelected;
 
