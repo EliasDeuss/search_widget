@@ -22,18 +22,18 @@ typedef TextFieldBuilder = Widget Function(
 
 class SearchWidget<T> extends StatefulWidget {
   const SearchWidget({
-    @required this.dataList,
-    @required this.popupListItemBuilder,
-    @required this.selectedItemBuilder,
-    @required this.queryBuilder,
-    Key key,
-    this.onItemSelected,
+    required this.dataList,
+    required this.popupListItemBuilder,
+    required this.selectedItemBuilder,
+    required this.queryBuilder,
+    required this.onItemSelected,
+    required this.noItemsFoundWidget,
+    required this.textFieldBuilder,
+    required this.listContainerHeight,
     this.hideSearchBoxWhenItemSelected = false,
-    this.listContainerHeight,
     this.backgroundColor = Colors.white,
     this.cardBorderRadius = const BorderRadius.all(Radius.circular(4)),
-    this.noItemsFoundWidget,
-    this.textFieldBuilder,
+    Key? key,
   }) : super(key: key);
 
   final List<T> dataList;
@@ -53,18 +53,18 @@ class SearchWidget<T> extends StatefulWidget {
   MySingleChoiceSearchState<T> createState() => MySingleChoiceSearchState<T>();
 }
 
-class MySingleChoiceSearchState<T> extends State<SearchWidget<T>> {
+class MySingleChoiceSearchState<T> extends State<SearchWidget<T?>> {
   final _controller = TextEditingController();
-  List<T> _list;
-  List<T> _tempList;
-  bool isFocused;
-  FocusNode _focusNode;
-  ValueNotifier<T> notifier;
-  bool isRequiredCheckFailed;
-  Widget textField;
-  OverlayEntry overlayEntry;
+  List<T>? _list;
+  List<T>? _tempList;
+  bool? isFocused;
+  FocusNode? _focusNode;
+  ValueNotifier<T?>? notifier;
+  bool? isRequiredCheckFailed;
+  Widget? textField;
+  OverlayEntry? overlayEntry;
   bool showTextBox = false;
-  double listContainerHeight;
+  double? listContainerHeight;
   final LayerLink _layerLink = LayerLink();
   final double textBoxHeight = 48;
   final TextEditingController textController = TextEditingController();
@@ -81,62 +81,66 @@ class MySingleChoiceSearchState<T> extends State<SearchWidget<T>> {
     _focusNode = FocusNode();
     isFocused = false;
     _list = List<T>.from(widget.dataList);
-    _tempList.addAll(_list);
-    _focusNode.addListener(() {
-      if (!_focusNode.hasFocus) {
+    _tempList!.addAll(_list!);
+    _focusNode!.addListener(() {
+      if (!_focusNode!.hasFocus) {
         _controller.clear();
         if (overlayEntry != null) {
-          overlayEntry.remove();
+          overlayEntry!.remove();
         }
         overlayEntry = null;
       } else {
-        _tempList
+        _tempList!
           ..clear()
-          ..addAll(_list);
+          ..addAll(_list!);
         if (overlayEntry == null) {
           onTap();
         } else {
-          overlayEntry.markNeedsBuild();
+          overlayEntry!.markNeedsBuild();
         }
       }
     });
     _controller.addListener(() {
       final text = _controller.text;
       if (text.trim().isNotEmpty) {
-        _tempList.clear();
+        _tempList!.clear();
         final filterList = widget.queryBuilder(text, widget.dataList);
         if (filterList == null) {
           throw Exception(
             "Filtered List cannot be null. Pass empty list instead",
           );
         }
-        _tempList.addAll(filterList);
+
+        for (final t in filterList) {
+          _tempList!.add(t!);
+        }
+
         if (overlayEntry == null) {
           onTap();
         } else {
-          overlayEntry.markNeedsBuild();
+          overlayEntry!.markNeedsBuild();
         }
       } else {
-        _tempList
+        _tempList!
           ..clear()
-          ..addAll(_list);
+          ..addAll(_list!);
         if (overlayEntry == null) {
           onTap();
         } else {
-          overlayEntry.markNeedsBuild();
+          overlayEntry!.markNeedsBuild();
         }
       }
     });
 
     KeyboardVisibilityController().onChange.listen((visible) {
       if (!visible) {
-        _focusNode.unfocus();
+        _focusNode!.unfocus();
       }
     });
   }
 
   @override
-  void didUpdateWidget(SearchWidget oldWidget) {
+  void didUpdateWidget(SearchWidget<T?> oldWidget) {
     if (oldWidget.dataList != widget.dataList) {
       init();
     }
@@ -148,7 +152,7 @@ class MySingleChoiceSearchState<T> extends State<SearchWidget<T>> {
     listContainerHeight =
         widget.listContainerHeight ?? MediaQuery.of(context).size.height / 4;
     textField = widget.textFieldBuilder != null
-        ? widget.textFieldBuilder(_controller, _focusNode)
+        ? widget.textFieldBuilder(_controller, _focusNode!)
         : Padding(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             child: TextField(
@@ -183,14 +187,14 @@ class MySingleChoiceSearchState<T> extends State<SearchWidget<T>> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        if (widget.hideSearchBoxWhenItemSelected && notifier.value != null)
+        if (widget.hideSearchBoxWhenItemSelected && notifier?.value != null)
           const SizedBox(height: 0)
         else
           CompositedTransformTarget(
             link: _layerLink,
             child: textField,
           ),
-        if (notifier.value != null)
+        if (notifier?.value != null)
           Container(
             decoration: BoxDecoration(
               color: Colors.grey[200],
@@ -198,7 +202,7 @@ class MySingleChoiceSearchState<T> extends State<SearchWidget<T>> {
             ),
             margin: const EdgeInsets.symmetric(horizontal: 16),
             child: widget.selectedItemBuilder(
-              notifier.value,
+              notifier!.value!,
               onDeleteSelectedItem,
             ),
           ),
@@ -209,13 +213,13 @@ class MySingleChoiceSearchState<T> extends State<SearchWidget<T>> {
 
   void onDropDownItemTap(T item) {
     if (overlayEntry != null) {
-      overlayEntry.remove();
+      overlayEntry!.remove();
     }
     overlayEntry = null;
     _controller.clear();
-    _focusNode.unfocus();
+    _focusNode!.unfocus();
     setState(() {
-      notifier.value = item;
+      notifier!.value = item;
       isFocused = false;
       isRequiredCheckFailed = false;
     });
@@ -225,8 +229,10 @@ class MySingleChoiceSearchState<T> extends State<SearchWidget<T>> {
   }
 
   void onTap() {
-    final RenderBox textFieldRenderBox = context.findRenderObject();
-    final RenderBox overlay = Overlay.of(context).context.findRenderObject();
+    final RenderBox textFieldRenderBox =
+        context.findRenderObject()! as RenderBox;
+    final RenderBox overlay =
+        Overlay.of(context)!.context.findRenderObject()! as RenderBox;
     final width = textFieldRenderBox.size.width;
     final position = RelativeRect.fromRect(
       Rect.fromPoints(
@@ -259,9 +265,9 @@ class MySingleChoiceSearchState<T> extends State<SearchWidget<T>> {
               child: CompositedTransformFollower(
                 offset: Offset(
                   0,
-                  height - position.bottom < listContainerHeight
+                  height - position.bottom < listContainerHeight!
                       ? (textBoxHeight + 6.0)
-                      : -(listContainerHeight - 8.0),
+                      : -(listContainerHeight! - 8.0),
                 ),
                 showWhenUnlinked: false,
                 link: _layerLink,
@@ -274,7 +280,7 @@ class MySingleChoiceSearchState<T> extends State<SearchWidget<T>> {
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(4)),
                     ),
-                    child: _tempList.isNotEmpty
+                    child: _tempList!.isNotEmpty
                         ? Scrollbar(
                             child: ListView.separated(
                               padding: const EdgeInsets.symmetric(vertical: 4),
@@ -286,13 +292,13 @@ class MySingleChoiceSearchState<T> extends State<SearchWidget<T>> {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   onTap: () =>
-                                      onDropDownItemTap(_tempList[index]),
+                                      onDropDownItemTap(_tempList![index]),
                                   child: widget.popupListItemBuilder(
-                                    _tempList.elementAt(index),
+                                    _tempList!.elementAt(index),
                                   ),
                                 ),
                               ),
-                              itemCount: _tempList.length,
+                              itemCount: _tempList!.length,
                             ),
                           )
                         : widget.noItemsFoundWidget != null
@@ -308,11 +314,11 @@ class MySingleChoiceSearchState<T> extends State<SearchWidget<T>> {
         );
       },
     );
-    Overlay.of(context).insert(overlayEntry);
+    Overlay.of(context)!.insert(overlayEntry!);
   }
 
   void onDeleteSelectedItem() {
-    setState(() => notifier.value = null);
+    setState(() => notifier?.value = null);
     if (widget.onItemSelected != null) {
       widget.onItemSelected(null);
     }
@@ -320,17 +326,17 @@ class MySingleChoiceSearchState<T> extends State<SearchWidget<T>> {
 
   void dismissMenu() {
     if (overlayEntry != null) {
-      overlayEntry.remove();
+      overlayEntry!.remove();
       overlayEntry = null;
       _controller.clear();
-      _focusNode.unfocus();
+      _focusNode!.unfocus();
     }
   }
 
   @override
   void dispose() {
     if (overlayEntry != null) {
-      overlayEntry.remove();
+      overlayEntry!.remove();
     }
     overlayEntry = null;
     super.dispose();

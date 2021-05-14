@@ -3,7 +3,7 @@
   "packages": [
     {
       "name": "async",
-      "rootUri": "file:///C:/Users/Elias/flutter/.pub-cache/hosted/pub.dartlang.org/async-2.5.0",
+      "rootUri": "file:///C:/Users/Elias/flutter/.pub-cache/hosted/pub.dartlang.org/async-2.6.1",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -57,7 +57,7 @@
     },
     {
       "name": "flutter_keyboard_visibility",
-      "rootUri": "file:///C:/Users/Elias/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_keyboard_visibility-5.0.0",
+      "rootUri": "file:///C:/Users/Elias/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_keyboard_visibility-5.0.1",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -119,7 +119,7 @@
       "name": "search_widget",
       "rootUri": "../../",
       "packageUri": "lib/",
-      "languageVersion": "2.2"
+      "languageVersion": "2.12"
     },
     {
       "name": "sky_engine",
@@ -129,7 +129,7 @@
     },
     {
       "name": "source_span",
-      "rootUri": "file:///C:/Users/Elias/flutter/.pub-cache/hosted/pub.dartlang.org/source_span-1.8.0",
+      "rootUri": "file:///C:/Users/Elias/flutter/.pub-cache/hosted/pub.dartlang.org/source_span-1.8.1",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -159,7 +159,7 @@
     },
     {
       "name": "test_api",
-      "rootUri": "file:///C:/Users/Elias/flutter/.pub-cache/hosted/pub.dartlang.org/test_api-0.2.19",
+      "rootUri": "file:///C:/Users/Elias/flutter/.pub-cache/hosted/pub.dartlang.org/test_api-0.3.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -182,7 +182,7 @@
       "languageVersion": "2.1"
     }
   ],
-  "generated": "2021-03-13T06:48:47.888644Z",
+  "generated": "2021-05-14T09:10:52.762073Z",
   "generator": "pub",
-  "generatorVersion": "2.12.0"
+  "generatorVersion": "2.13.0-211.14.beta"
 }
